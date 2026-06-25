@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài Test — 特定技能１号 宿泊分野</title>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Quicksand',sans-serif;background:#f0f4f0}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#1a3a17,#2e6b28);color:#fff;padding:14px 20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.header-jp{font-family:'BIZ UDPGothic',sans-serif;font-size:13px;color:#c8e6b8;letter-spacing:2px}
+.header-vi{font-size:16px;font-weight:700;margin-top:2px}
+.header-brand{font-size:11px;color:#adc;margin-top:4px;opacity:.8}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:calc(100vh - 60px);padding:20px}
+.screen.active{display:block}
+
+/* ── NAME SCREEN ── */
+.name-card{max-width:480px;margin:60px auto;background:#fff;border-radius:20px;padding:40px 32px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center}
+.name-card .icon{font-size:52px;margin-bottom:16px}
+.name-card h2{font-size:22px;color:#1a3a17;margin-bottom:6px}
+.name-card p{color:#666;font-size:14px;margin-bottom:28px}
+.name-input{width:100%;padding:14px 16px;border:2px solid #ddd;border-radius:10px;font-size:16px;font-family:'Quicksand',sans-serif;outline:none;transition:.2s}
+.name-input:focus{border-color:#2e6b28}
+.btn-start{margin-top:16px;width:100%;padding:14px;background:linear-gradient(135deg,#2e6b28,#4a9a3e);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;font-family:'Quicksand',sans-serif;cursor:pointer;transition:.2s}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(46,107,40,.4)}
+.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── QUIZ SCREEN ── */
+.quiz-container{max-width:680px;margin:0 auto}
+.quiz-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.student-badge{background:#fff;border:2px solid #c8e6b8;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:#1a3a17}
+.progress-info{font-size:13px;color:#555;font-weight:600}
+.progress-bar-wrap{background:#e0e0e0;border-radius:4px;height:6px;margin-bottom:20px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#2e6b28,#7ab648);border-radius:4px;transition:width .4s}
+
+.q-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,.08);margin-bottom:16px}
+.q-num{display:inline-block;background:#2e6b28;color:#fff;border-radius:20px;padding:3px 14px;font-size:12px;font-weight:700;margin-bottom:12px}
+.q-jp{font-family:'BIZ UDPGothic',sans-serif;font-size:17px;font-weight:700;color:#111;line-height:1.8;margin-bottom:6px}
+.q-vi{font-size:13px;color:#1B4F72;font-style:italic;margin-bottom:18px;padding:8px 12px;background:#e8f4fe;border-radius:8px}
+
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt-btn{padding:13px 16px;border:2px solid #ddd;background:#fafafa;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;font-family:'Quicksand',sans-serif;text-align:left;transition:.15s;line-height:1.5}
+.opt-btn:hover:not(:disabled){border-color:#2e6b28;background:#f0f8ea}
+.opt-btn.correct{background:#d4edda;border-color:#28a745;color:#145214}
+.opt-btn.wrong{background:#f8d7da;border-color:#dc3545;color:#721c24}
+.opt-btn:disabled{cursor:default}
+.opt-label{font-weight:800;margin-right:8px;color:#2e6b28}
+.opt-btn.correct .opt-label{color:#145214}
+.opt-btn.wrong .opt-label{color:#721c24}
+
+/* answer box */
+.answer-box{background:#f8fbf7;border:1.5px solid #c8e6b8;border-radius:12px;padding:16px;margin-top:14px;display:none}
+.answer-box.show{display:block}
+.answer-result{font-size:15px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.answer-result.ok{color:#1a7a30}
+.answer-result.ng{color:#c0392b}
+.exp-title{font-size:11px;font-weight:800;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:10px;margin-bottom:4px}
+.exp-jp{font-family:'BIZ UDPGothic',sans-serif;font-size:14px;color:#222;line-height:1.8;margin-bottom:8px}
+.exp-vi{font-size:13px;color:#1B4F72;font-style:italic;line-height:1.7;background:#e8f4fe;padding:8px 12px;border-radius:8px;margin-bottom:10px}
+.vocab-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.vocab-chip{background:#fff;border:1.5px solid #c8e6b8;border-radius:8px;padding:5px 10px;font-size:12px}
+.vocab-jp{font-family:'BIZ UDPGothic',sans-serif;font-weight:700;color:#1a3a17}
+.vocab-read{color:#888;font-size:11px;display:block}
+.vocab-vi{color:#1B4F72;font-size:12px;font-weight:600}
+
+.nav-btns{display:flex;gap:10px;margin-top:8px}
+.btn-nav{flex:1;padding:12px;border:2px solid #2e6b28;border-radius:10px;background:#fff;color:#2e6b28;font-size:14px;font-weight:700;font-family:'Quicksand',sans-serif;cursor:pointer;transition:.15s}
+.btn-nav:hover{background:#2e6b28;color:#fff}
+.btn-nav.primary{background:#2e6b28;color:#fff}
+.btn-nav.primary:hover{background:#1a5020}
+.btn-nav:disabled{opacity:.3;cursor:not-allowed}
+.btn-finish{width:100%;padding:14px;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Quicksand',sans-serif;cursor:pointer;margin-top:16px;display:none;transition:.2s}
+.btn-finish:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(192,57,43,.4)}
+
+/* ── RESULT SCREEN ── */
+.result-container{max-width:680px;margin:0 auto}
+.result-hero{background:linear-gradient(135deg,#1a3a17,#2e6b28);color:#fff;border-radius:20px;padding:32px;text-align:center;margin-bottom:20px}
+.result-name{font-size:15px;opacity:.8;margin-bottom:8px}
+.result-score{font-size:64px;font-weight:800;font-family:'BIZ UDPGothic',sans-serif;line-height:1}
+.result-total{font-size:20px;opacity:.8;margin-bottom:8px}
+.result-pct{font-size:22px;font-weight:700;margin-bottom:4px}
+.result-msg{font-size:15px;opacity:.9}
+.result-stars{font-size:32px;margin:12px 0}
+
+.review-title{font-size:16px;font-weight:800;color:#1a3a17;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.review-item{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:5px solid #ddd}
+.review-item.ok{border-left-color:#28a745}
+.review-item.ng{border-left-color:#dc3545}
+.review-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.review-badge{font-size:11px;font-weight:800;padding:2px 10px;border-radius:10px}
+.review-badge.ok{background:#d4edda;color:#145214}
+.review-badge.ng{background:#f8d7da;color:#721c24}
+.review-q{font-family:'BIZ UDPGothic',sans-serif;font-size:14px;font-weight:700;color:#111;line-height:1.7;margin-bottom:4px}
+.review-q-vi{font-size:12px;color:#1B4F72;font-style:italic;margin-bottom:10px}
+.review-your{font-size:13px;color:#dc3545;margin-bottom:2px}
+.review-your.ok{color:#28a745}
+.review-correct{font-size:13px;color:#145214;font-weight:700;margin-bottom:8px}
+
+.btn-retry{width:100%;padding:14px;background:linear-gradient(135deg,#2e6b28,#4a9a3e);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Quicksand',sans-serif;cursor:pointer;margin-top:8px;margin-bottom:40px}
+
+/* mobile */
+@media(max-width:480px){
+  .screen{padding:12px}
+  .q-card{padding:16px}
+  .q-jp{font-size:15px}
+  .result-score{font-size:52px}
+  .name-card{margin:20px auto;padding:28px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-jp">特定技能１号評価試験 宿泊分野</div>
+  <div class="header-vi">Bài Kiểm Tra Thực Hành — Ngành Lưu trú Khách sạn</div>
+  <div class="header-brand">✦ Anh Trọng Dạy Gino ✦</div>
+</div>
+
+<!-- SCREEN 1: NHẬP TÊN -->
+<div class="screen active" id="screen-name">
+  <div class="name-card">
+    <div class="icon">🏨</div>
+    <h2>Bài Test 20 Câu</h2>
+    <p>Nhập tên của bạn trước khi bắt đầu làm bài nhé!</p>
+    <input class="name-input" id="studentName" type="text" placeholder="Ví dụ: Nguyễn Văn A" maxlength="40"
+      oninput="document.getElementById('btnStart').disabled=!this.value.trim()">
+    <button class="btn-start" id="btnStart" disabled onclick="startQuiz()">
+      🚀 Bắt đầu làm bài
+    </button>
+    <p style="margin-top:16px;font-size:12px;color:#aaa">20 câu trắc nghiệm • Xem đáp án & giải thích sau khi nộp bài</p>
+  </div>
+</div>
+
+<!-- SCREEN 2: LÀM BÀI -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-container">
+    <div class="quiz-topbar">
+      <div class="student-badge">👤 <span id="nameDisplay"></span></div>
+      <div class="progress-info">Câu <span id="qCurrent">1</span> / 20</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:5%"></div>
+    </div>
+    <div id="qCard" class="q-card"></div>
+    <div class="nav-btns">
+      <button class="btn-nav" id="btnPrev" onclick="navigate(-1)" disabled>◀ Trước</button>
+      <button class="btn-nav primary" id="btnNext" onclick="navigate(1)">Tiếp ▶</button>
+    </div>
+    <button class="btn-finish" id="btnFinish" onclick="finishQuiz()">📋 Nộp bài & Xem kết quả</button>
+  </div>
+</div>
+
+<!-- SCREEN 3: KẾT QUẢ -->
+<div class="screen" id="screen-result">
+  <div class="result-container">
+    <div class="result-hero">
+      <div class="result-name" id="resultName"></div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-total">/ 20 câu</div>
+      <div class="result-stars" id="resultStars"></div>
+      <div class="result-pct" id="resultPct"></div>
+      <div class="result-msg" id="resultMsg"></div>
+    </div>
+    <div class="review-title">📝 Xem lại từng câu</div>
+    <div id="reviewList"></div>
+    <button class="btn-retry" onclick="retryQuiz()">🔄 Làm lại từ đầu</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const QS = [
+  {
+    q:"ホテルでのチェックイン時(じ)に、必要(ひつよう)な書類(しょるい)は何ですか?",
+    qv:"Khi check-in tại khách sạn, cần xuất trình giấy tờ gì?",
+    o:["パスポート","運転免許証(うんてんめんきょしょう)","保険証(ほけんしょう)"],
+    ov:["Hộ chiếu","Bằng lái xe","Thẻ bảo hiểm y tế"],
+    a:0,
+    ej:"外国人がホテルに宿泊する際、日本の法律によりパスポートの提示・コピー保管が義務づけられています。",
+    ev:"Theo luật Nhật, người nước ngoài khi lưu trú phải xuất trình hộ chiếu để khách sạn sao chụp và lưu giữ.",
+    vc:[["チェックイン","chekku-in","nhận phòng"],["書類","しょるい","giấy tờ"],["パスポート","pasupōto","hộ chiếu"]]
+  },
+  {
+    q:"ホテルの部屋(へや)で禁煙(きんえん)ルームとは、どのような部屋(へや)ですか?",
+    qv:"Phòng '禁煙ルーム' tại khách sạn là loại phòng như thế nào?",
+    o:["タバコを吸(す)わない部屋(へや)","タバコを吸(す)える部屋(へや)","タバコを持(も)ち込(こ)むことができる部屋(へや)"],
+    ov:["Phòng không hút thuốc","Phòng được hút thuốc","Phòng được mang thuốc vào"],
+    a:0,
+    ej:"禁煙（きんえん）は「タバコを禁止する」という意味。禁煙ルームはタバコを吸ってはいけない部屋です。",
+    ev:"禁（きん）= cấm, 煙（えん）= khói thuốc → 禁煙 = cấm hút thuốc. Trái lại, 喫煙（きつえん）= được hút thuốc.",
+    vc:[["禁煙","きんえん","cấm hút thuốc"],["喫煙","きつえん","được hút thuốc"],["部屋","へや","phòng"]]
+  },
+  {
+    q:"ホテルのレストランで朝食(ちょうしょく)が提供(ていきょう)される時間(じかん)は通常(つうじょう)何時(なんじ)ですか?",
+    qv:"Bữa sáng tại nhà hàng khách sạn thường được phục vụ trong khung giờ nào?",
+    o:["午前(ごぜん) 6時から9時まで","午前(ごぜん) 7時から10時まで","午前(ごぜん) 8時から11時まで"],
+    ov:["6:00 ~ 9:00 sáng","7:00 ~ 10:00 sáng","8:00 ~ 11:00 sáng"],
+    a:1,
+    ej:"日本のホテルでは朝食は一般的に午前7時から10時ごろまで提供されます。施設によって異なりますが、7〜10時が最も一般的です。",
+    ev:"Bữa sáng tại khách sạn Nhật thường từ 7 giờ đến 10 giờ. Câu 6~9 sai vì quá sớm; 8~11 sai vì quá muộn.",
+    vc:[["朝食","ちょうしょく","bữa sáng"],["提供","ていきょう","phục vụ, cung cấp"],["通常","つうじょう","thông thường"]]
+  },
+  {
+    q:"ホテルで、温泉(おんせん)に入(はい)る際(さい)に必要(ひつよう)なマナーは何ですか?",
+    qv:"Phép lịch sự cần thiết khi vào onsen (suối nước nóng) là gì?",
+    o:["体(からだ)を洗(あら)う","タオルを持(も)って入(はい)る","シャワーを浴(あ)びない"],
+    ov:["Tắm rửa sạch sẽ trước khi vào","Mang khăn vào trong bể","Không tắm vòi sen trước"],
+    a:0,
+    ej:"温泉に入る前に必ず体を洗う（かけ湯をする）のがマナーです。タオルを湯船に入れることは禁止されています。",
+    ev:"Trước khi vào onsen PHẢI tắm sạch người. Tuyệt đối không mang khăn nhúng vào bể — đây là phép lịch sự cơ bản!",
+    vc:[["温泉","おんせん","suối nước nóng"],["マナー","manā","phép lịch sự"],["かけ湯","かけゆ","dội nước rửa trước khi vào bể"]]
+  },
+  {
+    q:"ホテルのチェックアウト時間(じかん)を過(す)ぎた場合(ばあい)、どうなりますか?",
+    qv:"Nếu quá giờ check-out của khách sạn thì điều gì sẽ xảy ra?",
+    o:["延長料金(えんちょうりょうきん)がかかる","何(なに)も起(お)きない","無料(むりょう)で泊(と)まれる"],
+    ov:["Bị tính phí gia hạn","Không có gì xảy ra","Được ở miễn phí"],
+    a:0,
+    ej:"チェックアウト時間を過ぎると、延長料金（レイトチェックアウト料金）が発生します。事前にフロントへ相談することが重要です。",
+    ev:"Quá giờ check-out sẽ bị tính phí gia hạn (late check-out fee). Muốn ở thêm → báo lễ tân từ trước!",
+    vc:[["チェックアウト","chekku-auto","trả phòng"],["延長料金","えんちょうりょうきん","phí gia hạn"],["レイトチェックアウト","reito chekku-auto","trả phòng muộn"]]
+  },
+  {
+    q:"ホテルで荷物(にもつ)を預(あず)ける際(さい)に利用(りよう)する場所(ばしょ)はどこですか?",
+    qv:"Khi muốn gửi hành lý tại khách sạn, bạn đến đâu?",
+    o:["クローク","レストラン","プール"],
+    ov:["Phòng gửi đồ (Cloakroom)","Nhà hàng","Bể bơi"],
+    a:0,
+    ej:"クロークは荷物を一時的に預かる場所。チェックイン前やチェックアウト後に観光したい時に利用します。",
+    ev:"Cloakroom (クローク) là nơi gửi hành lý tạm thời. Tiện lợi khi muốn đi tham quan trước check-in hoặc sau check-out.",
+    vc:[["クローク","kurōku","phòng gửi đồ"],["荷物","にもつ","hành lý"],["預ける","あずける","gửi, giao cho người khác giữ"]]
+  },
+  {
+    q:"ホテルの Wi-Fi を利用(りよう)したい時、どこでパスワードを教(おし)えてもらえますか?",
+    qv:"Khi muốn dùng Wi-Fi tại khách sạn, bạn hỏi mật khẩu ở đâu?",
+    o:["フロント","駐車場(ちゅうしゃじょう)","非常口(ひじょうぐち)"],
+    ov:["Lễ tân","Bãi đỗ xe","Lối thoát hiểm"],
+    a:0,
+    ej:"Wi-Fiのパスワードはフロントで教えてもらえます。またはルームカードや部屋の案内書に記載されていることも多いです。",
+    ev:"Mật khẩu Wi-Fi được cung cấp tại lễ tân. Đôi khi cũng được ghi trong thẻ phòng hoặc tập tài liệu hướng dẫn trong phòng.",
+    vc:[["フロント","furonto","lễ tân"],["パスワード","pasuwādo","mật khẩu"],["利用","りよう","sử dụng"]]
+  },
+  {
+    q:"予約(よやく)をキャンセルする場合(ばあい)、何(なに)が発生(はっせい)することがありますか?",
+    qv:"Khi hủy đặt phòng, điều gì có thể phát sinh?",
+    o:["キャンセル料(りょう)","サービス料(りょう)","保証金(ほしょうきん)"],
+    ov:["Phí hủy phòng","Phí dịch vụ","Tiền đặt cọc"],
+    a:0,
+    ej:"宿泊施設が定めるキャンセルポリシーに従い、キャンセル料が発生する場合があります。直前のキャンセルほど高額になります。",
+    ev:"Tùy theo chính sách hủy phòng (cancel policy), bạn có thể bị tính phí hủy. Hủy càng gần ngày → phí càng cao!",
+    vc:[["キャンセル料","kyanseru ryō","phí hủy đặt phòng"],["キャンセルポリシー","kyanseru porishī","chính sách hủy phòng"],["発生","はっせい","phát sinh"]]
+  },
+  {
+    q:"ホテルの部屋(へや)に備(そな)え付(つ)けの冷蔵庫(れいぞうこ)にある飲(の)み物(もの)を利用(りよう)する場合(ばあい)、何に注意(ちゅうい)すべきですか?",
+    qv:"Khi dùng đồ uống trong tủ lạnh phòng khách sạn, cần chú ý điều gì?",
+    o:["料金(りょうきん)がかかるかどうか","飲(の)み方(かた)","賞味期限(しょうみきげん)"],
+    ov:["Có bị tính tiền không","Cách uống","Hạn sử dụng"],
+    a:0,
+    ej:"冷蔵庫の飲み物は有料の場合がほとんどです。無料かどうか必ず確認しましょう。チェックアウト時に館内利用として請求されます。",
+    ev:"Đồ uống trong tủ lạnh phòng hầu hết đều tính tiền! Phải xác nhận trước khi dùng — sẽ bị cộng vào hóa đơn check-out.",
+    vc:[["冷蔵庫","れいぞうこ","tủ lạnh"],["有料","ゆうりょう","có tính tiền"],["館内利用","かんないりよう","dịch vụ sử dụng trong khách sạn"]]
+  },
+  {
+    q:"ホテルのランドリーサービスを利用(りよう)する際(さい)に必要(ひつよう)な手続(てつづ)きは?",
+    qv:"Thủ tục cần thiết khi sử dụng dịch vụ giặt là của khách sạn là gì?",
+    o:["依頼書(いらいしょ)の記入(きにゅう)","洗剤(せんざい)の購入(こうにゅう)","服(ふく)のラベル貼(は)り"],
+    ov:["Điền phiếu yêu cầu","Mua bột giặt","Dán nhãn lên quần áo"],
+    a:0,
+    ej:"ランドリーサービスを利用する際は、専用の依頼書（ランドリーバッグと一緒に部屋に備え付け）に必要事項を記入します。",
+    ev:"Khi dùng dịch vụ giặt là, cần điền vào phiếu yêu cầu — thường để sẵn trong phòng cùng túi đựng quần áo.",
+    vc:[["ランドリーサービス","randorī sābisu","dịch vụ giặt là"],["依頼書","いらいしょ","phiếu yêu cầu"],["記入","きにゅう","điền vào"]]
+  },
+  {
+    q:"日本(にほん)のホテルで、朝食(ちょうしょく)の提供(ていきょう)形式(けいしき)で一般的(いっぱんてき)なものはどれですか?",
+    qv:"Hình thức phục vụ bữa sáng phổ biến nhất tại khách sạn Nhật là gì?",
+    o:["ビュッフェ形式(けいしき)→バイキング","テーブルサービス","部屋(へや)での食事(しょくじ)"],
+    ov:["Dạng buffet (tự chọn)","Phục vụ tại bàn","Ăn trong phòng"],
+    a:0,
+    ej:"日本のホテルでは朝食をビュッフェ（バイキング）形式で提供するのが最も一般的です。和食・洋食が両方並ぶことが多いです。",
+    ev:"Buffet (tiếng Nhật gọi là バイキング) là hình thức phổ biến nhất. Thường có cả món Nhật lẫn Tây.",
+    vc:[["ビュッフェ","byuffe","buffet"],["バイキング","baikingu","cách gọi buffet ở Nhật"],["形式","けいしき","hình thức, dạng"]]
+  },
+  {
+    q:"ホテルでチェックアウトする際(さい)に返却(へんきゃく)するものは何ですか?",
+    qv:"Khi check-out tại khách sạn, bạn cần trả lại gì?",
+    o:["部屋番号(へやばんごう)","ルームキー","フロントの電話番号(でんわばんごう)"],
+    ov:["Số phòng","Chìa khóa phòng","Số điện thoại lễ tân"],
+    a:1,
+    ej:"チェックアウト時にはルームキー（カードキーの場合も）をフロントに返却します。返却を忘れると紛失扱いになる場合があります。",
+    ev:"Khi check-out phải trả lại chìa khóa phòng (hoặc thẻ từ) cho lễ tân. Quên trả → có thể bị tính phí mất chìa khóa!",
+    vc:[["返却","へんきゃく","trả lại"],["ルームキー","rūmu kī","chìa khóa phòng"],["紛失","ふんしつ","mất đồ"]]
+  },
+  {
+    q:"日本(にほん)のホテルで、部屋(へや)の掃除(そうじ)を依頼(いらい)する時にドアに掛(か)ける札(ふだ)は何ですか?",
+    qv:"Tấm biển treo cửa để yêu cầu dọn phòng là gì?",
+    o:["「掃除(そうじ)してください」","「起(お)こさないでください」","「外出中(がいしゅつちゅう)」"],
+    ov:["Xin hãy dọn phòng","Đừng làm phiền (DND)","Đang ra ngoài"],
+    a:0,
+    ej:"部屋の清掃を依頼する場合は「掃除してください」の札をドアに掛けます。「起こさないでください」はDND（Do Not Disturb）で清掃不要の合図です。",
+    ev:"Treo biển 「掃除してください」để yêu cầu dọn phòng. Ngược lại, 「起こさないでください」(DND) = không muốn bị làm phiền.",
+    vc:[["掃除","そうじ","dọn dẹp"],["札","ふだ","tấm thẻ, biển nhỏ"],["起こさないでください","おこさないでください","Đừng làm phiền (DND)"]]
+  },
+  {
+    q:"フロントスタッフにお客様(おきゃくさま)が「タクシーを呼(よ)んでください」と言(い)った場合(ばあい)の対応(たいおう)は?",
+    qv:"Khi khách nói 'Hãy gọi taxi cho tôi', nhân viên lễ tân phải làm gì?",
+    o:["すぐに手配(てはい)する","自分(じぶん)で呼(よ)ぶように言(い)う","断(ことわ)る"],
+    ov:["Sắp xếp ngay lập tức","Bảo khách tự gọi lấy","Từ chối"],
+    a:0,
+    ej:"お客様のリクエストにはすぐに応えるのが基本です。タクシーの手配はフロントの重要な業務の一つです。",
+    ev:"Đáp ứng yêu cầu của khách ngay lập tức là nguyên tắc cơ bản. Gọi taxi cho khách là việc của lễ tân!",
+    vc:[["手配","てはい","sắp xếp, thu xếp"],["すぐに","すぐに","ngay lập tức"],["対応","たいおう","xử lý, đáp ứng"]]
+  },
+  {
+    q:"ホテルのロビーで大声(おおごえ)で話(はな)しているお客様(おきゃくさま)がいた場合(ばあい)の対応(たいおう)は?",
+    qv:"Khi có khách nói to trong sảnh khách sạn, nhân viên xử lý thế nào?",
+    o:["丁寧(ていねい)に注意(ちゅうい)する","一緒(いっしょ)に話(はな)す","無視(むし)する"],
+    ov:["Nhắc nhở lịch sự, nhẹ nhàng","Cùng nói chuyện to với khách","Làm ngơ"],
+    a:0,
+    ej:"他のお客様への配慮として、丁寧に「ご静粛にお願いします」とお声がけします。笑顔で穏やかに対応しましょう。",
+    ev:"Vì sự thoải mái của khách khác, nhắc nhở nhẹ nhàng và lịch sự với nụ cười. Không làm khách bực bội!",
+    vc:[["丁寧に","ていねいに","lịch sự, nhẹ nhàng"],["大声","おおごえ","giọng to"],["ご静粛に","ごせいしゅくに","xin giữ yên lặng"]]
+  },
+  {
+    q:"日本(にほん)のホテルで、チップを渡(わた)された時(とき)の対応(たいおう)は?",
+    qv:"Khi được khách đưa tiền tip tại khách sạn Nhật, nhân viên phải làm gì?",
+    o:["丁寧(ていねい)に断(ことわ)る","もらってポケットに入(い)れる","もっと多(おお)く欲(ほ)しいと言(い)う"],
+    ov:["Lịch sự từ chối","Nhận và bỏ túi","Xin thêm tiền"],
+    a:0,
+    ej:"日本にはチップを受け取る文化がありません。丁寧に「お気持ちだけいただきます」と断りましょう。",
+    ev:"Nhật Bản KHÔNG có văn hóa tiền tip. Phải từ chối lịch sự. Nhận tiền tip có thể bị xem là vi phạm quy định!",
+    vc:[["チップ","chippu","tiền tip"],["断る","ことわる","từ chối"],["お気持ちだけ","おきもちだけ","chỉ xin nhận tấm lòng thôi"]]
+  },
+  {
+    q:"非常口(ひじょうぐち)の場所(ばしょ)はいつ確認(かくにん)すべきですか?",
+    qv:"Nên kiểm tra vị trí lối thoát hiểm khi nào?",
+    o:["チェックイン後(ご)すぐ","火事(かじ)が起(お)きてから","チェックアウトの時(とき)"],
+    ov:["Ngay sau khi check-in","Khi có hỏa hoạn","Lúc check-out"],
+    a:0,
+    ej:"非常口の場所はチェックイン後すぐに確認することが安全のために重要です。緊急時に慌てないよう事前に把握しましょう。",
+    ev:"Vì lý do an toàn, phải kiểm tra vị trí lối thoát hiểm NGAY SAU khi nhận phòng. Đừng đợi đến khi có sự cố!",
+    vc:[["非常口","ひじょうぐち","lối thoát hiểm"],["確認","かくにん","xác nhận, kiểm tra"],["緊急時","きんきゅうじ","trường hợp khẩn cấp"]]
+  },
+  {
+    q:"ホテルの部屋(へや)にあるアメニティとは何(なん)ですか?",
+    qv:"Amenity trong phòng khách sạn là gì?",
+    o:["歯(は)ブラシやタオルなどの備品(びひん)","テレビの番組(ばんぐみ)","近(ちか)くの観光地(かんこうち)"],
+    ov:["Đồ dùng như bàn chải, khăn tắm...","Chương trình TV","Điểm du lịch gần đó"],
+    a:0,
+    ej:"アメニティとは、ホテルの部屋に備え付けられている歯ブラシ・タオル・シャンプー・石鹸などの備品・消耗品のことです。",
+    ev:"Amenity là những đồ dùng được cung cấp sẵn trong phòng: bàn chải đánh răng, khăn tắm, dầu gội, xà phòng...",
+    vc:[["アメニティ","ameniti","đồ dùng tiện ích trong phòng"],["備品","びひん","đồ dùng, trang thiết bị"],["消耗品","しょうもうひん","đồ tiêu hao"]]
+  },
+  {
+    q:"「モーニングコール」とはどのようなサービスですか?",
+    qv:"Dịch vụ 'Morning Call' là gì?",
+    o:["指定(してい)した時間(じかん)に電話(でんわ)で起(お)こすサービス","朝食(ちょうしょく)を運(はこ)んでくるサービス","部屋(へや)を掃除(そうじ)するサービス"],
+    ov:["Dịch vụ gọi điện đánh thức đúng giờ yêu cầu","Dịch vụ mang bữa sáng đến phòng","Dịch vụ dọn phòng"],
+    a:0,
+    ej:"モーニングコールは、お客様が指定した時間にフロントから電話で起こすサービスです。",
+    ev:"Morning Call là dịch vụ lễ tân gọi điện đánh thức theo giờ khách yêu cầu. Giống chuông báo thức nhưng chắc chắn hơn!",
+    vc:[["モーニングコール","mōningu kōru","dịch vụ gọi điện đánh thức"],["指定","していする","chỉ định, yêu cầu cụ thể"],["起こす","おこす","đánh thức"]]
+  },
+  {
+    q:"ホテルの施設(しせつ)内(ない)で迷(まよ)っているお客様(おきゃくさま)を見(み)かけたらどうすべきですか?",
+    qv:"Khi thấy khách đang lạc lối trong cơ sở, bạn nên làm gì?",
+    o:["お声(こえ)がけをして案内(あんない)する","遠(とお)くから見(み)守(まも)る","足早(あしばや)に去(さ)る"],
+    ov:["Chủ động hỏi thăm và hướng dẫn","Quan sát từ xa","Bước đi nhanh qua"],
+    a:0,
+    ej:"館内で迷っているお客様を見かけたら、「何かお探しでしょうか」とお声がけして案内するのが接客の基本です。",
+    ev:"Khi thấy khách lúng túng, chủ động hỏi 「何かお探しでしょうか」(Quý khách đang tìm gì ạ?) và hướng dẫn — đây là tiếp khách cơ bản!",
+    vc:[["お声がけ","おこえがけ","chủ động lên tiếng hỏi thăm"],["案内","あんない","hướng dẫn, dẫn đường"],["迷う","まよう","lạc, không biết đường"]]
+  }
+];
+
+// ── STATE ──
+let studentName='', current=0, answers=Array(20).fill(null);
+
+function startQuiz(){
+  studentName=document.getElementById('studentName').value.trim();
+  if(!studentName)return;
+  document.getElementById('nameDisplay').textContent=studentName;
+  showScreen('screen-quiz');
+  renderQ(0);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderQ(i){
+  current=i;
+  const q=QS[i], answered=answers[i]!==null;
+  document.getElementById('qCurrent').textContent=i+1;
+  document.getElementById('progressFill').style.width=((i+1)/20*100)+'%';
+
+  let optsHtml=q.o.map((opt,oi)=>{
+    let cls='opt-btn';
+    if(answered){
+      if(oi===q.a) cls+=' correct';
+      else if(oi===answers[i]&&oi!==q.a) cls+=' wrong';
+    }
+    return `<button class="${cls}" onclick="selectOpt(${oi})" ${answered?'disabled':''}>
+      <span class="opt-label">${['A','B','C'][oi]}.</span>${opt}<br>
+      <small style="color:#888;font-size:11px;font-style:italic">${q.ov[oi]}</small>
+    </button>`;
+  }).join('');
+
+  let ansHtml='';
+  if(answered){
+    const ok=answers[i]===q.a;
+    ansHtml=`<div class="answer-box show">
+      <div class="answer-result ${ok?'ok':'ng'}">${ok?'✅ Chính xác!':'❌ Chưa đúng rồi!'}
+        ${!ok?`<span style="font-size:13px;font-weight:600">Đáp án đúng: <b>${['A','B','C'][q.a]}. ${q.o[q.a]}</b></span>`:''}
+      </div>
+      <div class="exp-title">📖 Giải thích (tiếng Nhật)</div>
+      <div class="exp-jp">${q.ej}</div>
+      <div class="exp-title">🇻🇳 Giải thích (tiếng Việt)</div>
+      <div class="exp-vi">${q.ev}</div>
+      <div class="exp-title">📚 Từ vựng</div>
+      <div class="vocab-wrap">${q.vc.map(([jp,r,vi])=>`
+        <div class="vocab-chip">
+          <span class="vocab-jp">${jp}</span>
+          <span class="vocab-read">${r}</span>
+          <span class="vocab-vi">${vi}</span>
+        </div>`).join('')}</div>
+    </div>`;
+  }
+
+  document.getElementById('qCard').innerHTML=`
+    <div class="q-num">Câu ${i+1} / 20</div>
+    <div class="q-jp">${q.q}</div>
+    <div class="q-vi">${q.qv}</div>
+    <div class="opts">${optsHtml}</div>
+    ${ansHtml}`;
+
+  document.getElementById('btnPrev').disabled=i===0;
+  document.getElementById('btnNext').textContent=i===19?'Câu cuối ▶':'Tiếp ▶';
+  document.getElementById('btnNext').disabled=i===19;
+
+  // Show nút nộp bài nếu đã trả lời đủ
+  const done=answers.filter(a=>a!==null).length;
+  document.getElementById('btnFinish').style.display=done===20?'block':'none';
+}
+
+function selectOpt(oi){
+  if(answers[current]!==null)return;
+  answers[current]=oi;
+  renderQ(current);
+}
+
+function navigate(dir){
+  const next=current+dir;
+  if(next>=0&&next<20)renderQ(next);
+}
+
+function finishQuiz(){
+  const score=answers.reduce((s,a,i)=>s+(a===QS[i].a?1:0),0);
+  const pct=Math.round(score/20*100);
+  let msg,stars;
+  if(pct>=90){msg='🎉 Xuất sắc! Bạn nắm vững kiến thức rồi!';stars='⭐⭐⭐⭐⭐';}
+  else if(pct>=80){msg='👍 Rất tốt! Ôn thêm một chút là hoàn hảo!';stars='⭐⭐⭐⭐';}
+  else if(pct>=60){msg='📚 Khá! Cần ôn lại những câu sai nhé!';stars='⭐⭐⭐';}
+  else if(pct>=40){msg='💪 Cố lên! Học lại và làm thử lần nữa nào!';stars='⭐⭐';}
+  else{msg='🌱 Hãy ôn kỹ lại từ đầu nhé bạn ơi!';stars='⭐';}
+
+  document.getElementById('resultName').textContent='👤 '+studentName;
+  document.getElementById('resultScore').textContent=score;
+  document.getElementById('resultPct').textContent=pct+'% chính xác';
+  document.getElementById('resultMsg').textContent=msg;
+  document.getElementById('resultStars').textContent=stars;
+
+  // Review list
+  let html='';
+  QS.forEach((q,i)=>{
+    const ok=answers[i]===q.a;
+    html+=`<div class="review-item ${ok?'ok':'ng'}">
+      <div class="review-header">
+        <span class="review-badge ${ok?'ok':'ng'}">${ok?'✅ Đúng':'❌ Sai'}</span>
+        <span style="font-size:12px;color:#888">Câu ${i+1}</span>
+      </div>
+      <div class="review-q">${q.q}</div>
+      <div class="review-q-vi">${q.qv}</div>
+      ${!ok?`<div class="review-your">Bạn chọn: ${answers[i]!==null?['A','B','C'][answers[i]]+'. '+q.o[answers[i]]:'(chưa trả lời)'}</div>`:''}
+      <div class="review-correct ${ok?'ok':''}">✅ Đáp án đúng: ${['A','B','C'][q.a]}. ${q.o[q.a]} — ${q.ov[q.a]}</div>
+      <div class="exp-vi" style="margin-top:6px">${q.ev}</div>
+      <div class="vocab-wrap" style="margin-top:8px">${q.vc.map(([jp,r,vi])=>`
+        <div class="vocab-chip">
+          <span class="vocab-jp">${jp}</span>
+          <span class="vocab-read">${r}</span>
+          <span class="vocab-vi">${vi}</span>
+        </div>`).join('')}</div>
+    </div>`;
+  });
+  document.getElementById('reviewList').innerHTML=html;
+  showScreen('screen-result');
+}
+
+function retryQuiz(){
+  answers=Array(20).fill(null);
+  current=0;
+  showScreen('screen-quiz');
+  renderQ(0);
+}
+</script>
+</body>
+</html>
