@@ -1,24 +1,62 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyB1VGuNjxmLSmlLgno057xFlpnZcHdoUDs",
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VGuNjxmLSmlLgno057xFlpnZcHdoUDs",
   authDomain: "gino1khachsan.firebaseapp.com",
   projectId: "gino1khachsan",
   storageBucket: "gino1khachsan.firebasestorage.app",
   messagingSenderId: "895972012959",
   appId: "1:895972012959:web:7251dd3fbbb25d453ac3aa",
   measurementId: "G-CTN2S83XYR"
-};
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Xử lý form đăng nhập
+  window.login = function() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    signInWithEmailAndPassword(auth, email, password)
+      .catch((error) => {
+        document.getElementById("error-msg").innerText = "Sai email hoặc mật khẩu!";
+      });
+  };
+
+  window.logout = function() {
+    signOut(auth);
+  };
+
+  // Kiểm tra trạng thái đăng nhập
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("quiz-content").style.display = "block";
+    } else {
+      document.getElementById("login-screen").style.display = "block";
+      document.getElementById("quiz-content").style.display = "none";
+    }
+  });
+</script>
+
+<!-- Màn hình đăng nhập -->
+<div id="login-screen">
+  <h2>Đăng nhập</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Mật khẩu">
+  <button onclick="login()">Đăng nhập</button>
+  <p id="error-msg" style="color:red;"></p>
+</div>
+
+<!-- Nội dung quiz -->
+<div id="quiz-content" style="display:none;">
+  <button onclick="logout()">Đăng xuất</button>
+  <!-- Toàn bộ nội dung quiz của anh nằm ở đây -->
+</div>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
