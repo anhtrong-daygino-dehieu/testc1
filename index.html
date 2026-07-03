@@ -1,62 +1,3 @@
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyB1VGuNjxmLSmlLgno057xFlpnZcHdoUDs",
-  authDomain: "gino1khachsan.firebaseapp.com",
-  projectId: "gino1khachsan",
-  storageBucket: "gino1khachsan.firebasestorage.app",
-  messagingSenderId: "895972012959",
-  appId: "1:895972012959:web:7251dd3fbbb25d453ac3aa",
-  measurementId: "G-CTN2S83XYR"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // Xử lý form đăng nhập
-  window.login = function() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    signInWithEmailAndPassword(auth, email, password)
-      .catch((error) => {
-        document.getElementById("error-msg").innerText = "Sai email hoặc mật khẩu!";
-      });
-  };
-
-  window.logout = function() {
-    signOut(auth);
-  };
-
-  // Kiểm tra trạng thái đăng nhập
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      document.getElementById("login-screen").style.display = "none";
-      document.getElementById("quiz-content").style.display = "block";
-    } else {
-      document.getElementById("login-screen").style.display = "block";
-      document.getElementById("quiz-content").style.display = "none";
-    }
-  });
-</script>
-
-<!-- Màn hình đăng nhập -->
-<div id="login-screen">
-  <h2>Đăng nhập</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Mật khẩu">
-  <button onclick="login()">Đăng nhập</button>
-  <p id="error-msg" style="color:red;"></p>
-</div>
-
-<!-- Nội dung quiz -->
-<div id="quiz-content" style="display:none;">
-  <button onclick="logout()">Đăng xuất</button>
-  <!-- Toàn bộ nội dung quiz của anh nằm ở đây -->
-</div>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -77,6 +18,20 @@ html,body{height:100%;font-family:'Quicksand',sans-serif;background:#f0f4f0}
 /* ── SCREENS ── */
 .screen{display:none;min-height:calc(100vh - 60px);padding:20px}
 .screen.active{display:block}
+
+/* ── LOGIN SCREEN ── */
+.login-card{max-width:400px;margin:60px auto;background:#fff;border-radius:20px;padding:40px 32px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center}
+.login-card .icon{font-size:44px;margin-bottom:10px}
+.login-card h2{font-size:19px;color:#1a3a17;margin-bottom:24px}
+.login-input{width:100%;padding:13px 16px;margin-bottom:10px;border:2px solid #ddd;border-radius:10px;font-size:15px;font-family:'Quicksand',sans-serif;outline:none;transition:.2s}
+.login-input:focus{border-color:#2e6b28}
+.btn-login{margin-top:6px;width:100%;padding:14px;background:linear-gradient(135deg,#2e6b28,#4a9a3e);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Quicksand',sans-serif;cursor:pointer;transition:.2s}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(46,107,40,.4)}
+.btn-login:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.login-error{color:#c0392b;font-size:13px;margin-top:12px;min-height:16px}
+.logout-bar{display:flex;justify-content:flex-end;max-width:680px;margin:0 auto 8px}
+.btn-logout{background:#666;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;font-family:'Quicksand',sans-serif;cursor:pointer}
+.btn-logout:hover{background:#444}
 
 /* ── NAME SCREEN ── */
 .name-card{max-width:480px;margin:60px auto;background:#fff;border-radius:20px;padding:40px 32px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center}
@@ -112,7 +67,6 @@ html,body{height:100%;font-family:'Quicksand',sans-serif;background:#f0f4f0}
 .opt-btn.correct .opt-label{color:#145214}
 .opt-btn.wrong .opt-label{color:#721c24}
 
-/* answer box */
 .answer-box{background:#f8fbf7;border:1.5px solid #c8e6b8;border-radius:12px;padding:16px;margin-top:14px;display:none}
 .answer-box.show{display:block}
 .answer-result{font-size:15px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
@@ -168,7 +122,7 @@ html,body{height:100%;font-family:'Quicksand',sans-serif;background:#f0f4f0}
   .q-card{padding:16px}
   .q-jp{font-size:15px}
   .result-score{font-size:52px}
-  .name-card{margin:20px auto;padding:28px 20px}
+  .name-card,.login-card{margin:20px auto;padding:28px 20px}
 }
 </style>
 </head>
@@ -180,8 +134,20 @@ html,body{height:100%;font-family:'Quicksand',sans-serif;background:#f0f4f0}
   <div class="header-brand">✦ Anh Trọng Dạy Gino ✦</div>
 </div>
 
+<!-- SCREEN 0: ĐĂNG NHẬP -->
+<div class="screen active" id="screen-login">
+  <div class="login-card">
+    <div class="icon">🔒</div>
+    <h2>Đăng nhập để làm bài</h2>
+    <input class="login-input" id="loginEmail" type="email" placeholder="Email">
+    <input class="login-input" id="loginPassword" type="password" placeholder="Mật khẩu">
+    <button class="btn-login" id="loginBtn" onclick="doLogin()">Đăng nhập</button>
+    <p class="login-error" id="loginError"></p>
+  </div>
+</div>
+
 <!-- SCREEN 1: NHẬP TÊN -->
-<div class="screen active" id="screen-name">
+<div class="screen" id="screen-name">
   <div class="name-card">
     <div class="icon">🏨</div>
     <h2>Bài Test 20 Câu</h2>
@@ -198,6 +164,7 @@ html,body{height:100%;font-family:'Quicksand',sans-serif;background:#f0f4f0}
 <!-- SCREEN 2: LÀM BÀI -->
 <div class="screen" id="screen-quiz">
   <div class="quiz-container">
+    <div class="logout-bar"><button class="btn-logout" onclick="doLogout()">Đăng xuất</button></div>
     <div class="quiz-topbar">
       <div class="student-badge">👤 <span id="nameDisplay"></span></div>
       <div class="progress-info">Câu <span id="qCurrent">1</span> / 20</div>
@@ -230,6 +197,58 @@ html,body{height:100%;font-family:'Quicksand',sans-serif;background:#f0f4f0}
     <button class="btn-retry" onclick="retryQuiz()">🔄 Làm lại từ đầu</button>
   </div>
 </div>
+
+<!-- ── FIREBASE AUTH ── -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1VGuNjxmLSmLLgno057xFlpnZcHdoUDs",
+    authDomain: "gino1khachsan.firebaseapp.com",
+    projectId: "gino1khachsan",
+    storageBucket: "gino1khachsan.firebasestorage.app",
+    messagingSenderId: "895972012959",
+    appId: "1:895972012959:web:7251dd3fbbb25d453ac3aa",
+    measurementId: "G-CTN2S83XYR"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.doLogin = function () {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const btn = document.getElementById('loginBtn');
+    const errEl = document.getElementById('loginError');
+    errEl.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Đang đăng nhập...';
+    signInWithEmailAndPassword(auth, email, password)
+      .catch(() => { errEl.textContent = 'Sai email hoặc mật khẩu, vui lòng thử lại.'; })
+      .finally(() => { btn.disabled = false; btn.textContent = 'Đăng nhập'; });
+  };
+
+  window.doLogout = function () {
+    signOut(auth);
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    if (user) {
+      document.getElementById('screen-name').classList.add('active');
+    } else {
+      document.getElementById('screen-login').classList.add('active');
+    }
+  });
+</script>
 
 <script>
 // ── DATA ──
@@ -503,7 +522,6 @@ function renderQ(i){
   document.getElementById('btnNext').textContent=i===19?'Câu cuối ▶':'Tiếp ▶';
   document.getElementById('btnNext').disabled=i===19;
 
-  // Show nút nộp bài nếu đã trả lời đủ
   const done=answers.filter(a=>a!==null).length;
   document.getElementById('btnFinish').style.display=done===20?'block':'none';
 }
@@ -535,7 +553,6 @@ function finishQuiz(){
   document.getElementById('resultMsg').textContent=msg;
   document.getElementById('resultStars').textContent=stars;
 
-  // Review list
   let html='';
   QS.forEach((q,i)=>{
     const ok=answers[i]===q.a;
